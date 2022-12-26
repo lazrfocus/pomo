@@ -10,7 +10,7 @@
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
-
+        <!-- <q-img class="logo" src="/src/assets/pomo_logo.png" alt="Logo" /> -->
         <q-toolbar-title>
           Pomo
         </q-toolbar-title>
