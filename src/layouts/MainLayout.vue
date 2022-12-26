@@ -15,7 +15,6 @@
           Pomo
         </q-toolbar-title>
 
-        <!-- <div>Quasar v{{ $q.version }}</div> -->
       </q-toolbar>
     </q-header>
 
@@ -28,7 +27,19 @@
         <q-item-label
           header
         >
-          Essential Links
+          Pomo
+        </q-item-label>
+
+        <EssentialLink
+          v-for="link in pomoLinks"
+          :key="link.title"
+          v-bind="link"
+        />
+
+        <q-item-label
+          header
+        >
+          External Links
         </q-item-label>
 
         <EssentialLink
@@ -49,12 +60,27 @@
 import { ref } from 'vue';
 import EssentialLink from 'components/EssentialLink.vue';
 
+const pomoLinks = [
+  {
+    title: 'Home',
+    caption: 'Home',
+    icon: 'home',
+    link: '#'
+  },
+  {
+    title: 'Settings',
+    caption: 'Settings',
+    icon: 'settings',
+    link: '/settings'
+  }
+];
+
 const essentialLinks = [
   {
     title: 'Github',
-    caption: 'github.com/lazrfocus',
+    caption: 'github.com/lazrfocus/pomo',
     icon: 'code',
-    link: 'https://github.com/lazrfocus'
+    link: 'https://github.com/lazrfocus/pomo'
   }
 ];
 
