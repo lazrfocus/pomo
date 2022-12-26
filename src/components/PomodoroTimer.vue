@@ -13,9 +13,9 @@
   </div>
   <div class ="q-gutter-md">
     <q-btn icon="settings" aria-label="Settings" @click="showSettings = true" class="settings-button"/>
-    <q-modal v-if="showSettings" @close="showSettings = false" v-model="showSettings" @hide="showSettings = false">
+    <q-dialog v-if="showSettings" @close="showSettings = false" v-model="showSettings" @hide="showSettings = false">
       <q-card>
-        <q-card-section>
+        <q-card-section class="columns items-center no-wrap">
           <q-input v-model="minutes" type="number" label="Minutes" min="1" step="1" />
           <q-input v-model="seconds" type="number" label="Seconds" min="0" max="59" step="1" />
           <q-input v-model="shortBreakMinutes" type="number" label="Short Break Minutes" min="1" step="1" />
@@ -28,7 +28,7 @@
           <q-btn @click="saveChanges" label="Save"/>
         </q-card-actions>
       </q-card>
-    </q-modal>
+    </q-dialog>
   </div>
 </template>
 

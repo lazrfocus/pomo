@@ -66,12 +66,6 @@ const pomoLinks = [
     caption: 'Home',
     icon: 'home',
     link: '#'
-  },
-  {
-    title: 'Settings',
-    caption: 'Settings',
-    icon: 'settings',
-    link: '/settings'
   }
 ];
 
