@@ -2,206 +2,176 @@
   <!-- timer display -->
   <div class="timer">
     {{ pad(elapsedMinutes) }}:{{ pad(elapsedSeconds) }}
+    <span class="milliseconds">.{{ pad(elapsedMilliseconds) }} </span>
   </div>
-  <!-- <q-display :value="pad(minutes) + ':' + pad(seconds)" color="secondary" size="4xl" font-weight="bold" /> -->
 
-  <!-- buttons for starting and stopping the timer -->
-  <div class="progressbar">
-    <q-circular-progress show-value size=50px :value="percentageRemaining.toFixed(1)" :label="percentageRemaining" color="warning" :thickness="0.1" class="q-ma-md" >{{ percentageRemaining.toFixed(1) }}% </q-circular-progress>
-  </div>
-  <div class ="q-gutter-md">
-    <q-btn elevated v-if="!running" @click="startTimer" color="positive" icon="play_arrow" label="Start"/>
-    <q-btn elevated v-if="running" @click="stopTimer" color="warning" icon="pause" label="Pause"/>
-    <q-btn elevated @click="resetTimer" color="negative" icon="refresh" label="Restart"/>
-  </div>
-  <div class ="q-gutter-md">
-    <q-btn icon="settings" aria-label="Settings" @click="this.showSettings = true" class="settings-button"/>
-    <q-dialog v-if="showSettings" @close="this.showSettings = false" v-model="showSettings" @hide="this.showSettings = false">
-      <q-card>
-        <q-card-section class="columns items-center no-wrap">
-          <q-input v-model="setMinutes" type="number" label="Minutes" min="1" step="1" />
-          <q-input v-model="setSeconds" type="number" label="Seconds" min="0" max="59" step="1" />
-          <q-input v-model="setShortBreakMinutes" type="number" label="Short Break Minutes" min="1" step="1" />
-          <q-input v-model="setShortBreakSeconds" type="number" label="Short Break Seconds" min="0" max="59" step="1" />
-          <q-input v-model="setLongBreakMinutes" type="number" label="Long Break Minutes" min="1" step="1" />
-          <q-input v-model="setLongBreakSeconds" type="number" label="Long Break Seconds" min="0" max="59" step="1" />
-          <q-toggle v-model="useShortBreak" label="Use short break" />
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn @click="cancelSettings" label="Cancel"/>
-          <q-btn @click="saveSettings" label="Save"/>
-          <q-btn @click="resetSettings" label="Reset"/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+  <!-- buttons -->
+  <div class="q-gutter-md timer">
+    <q-btn
+      elevated
+      v-if="!running"
+      @click="startTimer"
+      color="positive"
+      icon="play_arrow"
+      label="Start"
+    />
+    <q-btn
+      elevated
+      v-if="running"
+      @click="stopTimer"
+      color="warning"
+      icon="pause"
+      label="Pause"
+    />
+    <q-btn
+      elevated
+      @click="resetTimer"
+      color="negative"
+      icon="refresh"
+      label="Restart"
+    />
   </div>
 </template>
 
 <script>
 import { ref } from 'vue';
 import '../css/custom.css';
+import { defaultTimerParameters } from './defaultSettings.ts';
 
 export default {
   // set up reactive properties for the timer display
-  data () {
+  data() {
     return {
-      showSettings: false,
-      running: ref(false),
-      useShortBreak: ref(true),
-      initMinutes: ref(25),
-      initSeconds: ref(0),
-      initShortBreakMinutes: ref(5),
-      initShortBreakSeconds: ref(0),
-      initLongBreakMinutes: ref(15),
-      initLongBreakSeconds: ref(0),
-      elapsedMinutes: ref(25),
-      elapsedSeconds: ref(0),
-      totalMinutes: ref(25),
-      totalSeconds: ref(0),
-      setMinutes: ref(25),
-      setSeconds: ref(0),
-      setShortBreakMinutes: ref(5),
-      setShortBreakSeconds: ref(0),
-      setLongBreakMinutes: ref(15),
-      setLongBreakSeconds: ref(0)
-    }
+      defaultTimerParameters,
+      useShortBreak: ref(defaultTimerParameters.useShortBreak),
+      elapsedMinutes: ref(defaultTimerParameters.defaultMinutes),
+      elapsedSeconds: ref(defaultTimerParameters.defaultSeconds),
+      elapsedMilliseconds: ref(0),
+      totalMinutes: ref(defaultTimerParameters.defaultMinutes),
+      totalSeconds: ref(defaultTimerParameters.defaultMinutes),
+      paused: false,
+      running: false,
+      breakActive: false,
+      startTime: ref(0),
+      percentageRemainging: ref(0),
+    };
   },
 
-  computed: {
-    percentageRemaining() {
-      let totalElapsed = this.elapsedMinutes * 60 + this.elapsedSeconds;
-      // let totalTime = this.totalMinutes * 60 + this.totalSeconds;
-      // return (100- (totalElapsed / totalTime) * 100);
-      let totalTime;
-      if (this.breakActive)
-        totalTime = this.totalBreakMinutes * 60 + this.totalBreakMinutes;
-      else
-        totalTime = this.totalMinutes * 60 + this.totalSeconds;
-      return (100 - (totalElapsed / totalTime) * 100);      
-    }
-  },
+  props: ['this.breakActive', 'this.paused', 'this.running'],
 
-  watch: {
-    percentageRemaining(newValue, oldValue) {
-      console.log(`percentageRemaining changed from ${oldValue} to ${newValue}`)
-    }
-  },
-  
+  // computed: {
+  //   percentageRemaining() {
+  //     let totalElapsed =
+  //       this.elapsedMinutes * 60000 +
+  //       this.elapsedSeconds * 1000 +
+  //       this.elapsedMilliseconds;
+  //     let totalTime = this.totalMinutes * 60000 + this.totalSeconds * 1000;
+  //     console.log(1 - totalElapsed / totalTime);
+  //     return 1 - totalElapsed / totalTime;
+  //   },
+  // },
+
   // implement the startTimer method
   methods: {
     startTimer() {
+      if (!this.running && !this.paused) {
+        // set timer to initial values if timer is not running
+        this.elapsedMinutes = defaultTimerParameters.defaultMinutes;
+        this.elapsedSeconds = defaultTimerParameters.defaultSeconds;
+        this.elapsedMilliseconds = ref(0);
+        // set the total minutes and seconds for the progress bar
+        this.totalMinutes = defaultTimerParameters.defaultMinutes;
+        this.totalSeconds = defaultTimerParameters.defaultSeconds;
+        // calculate total time in milliseconds
+      }
       this.running = true; // set the running flag to true
-      // set an interval to update the timer display every second
-      this.interval = setInterval(() => {
-        // decrement the seconds
-        this.elapsedSeconds--;
-
-        // if the seconds reach zero, reset them and decrement the minutes
-        if (this.elapsedSeconds < 0) {
-          this.elapsedSeconds = 59;
-          this.elapsedMinutes--;
-        }
-
-        // if the minutes reach zero, reset the timer and display a notification
-        if (this.elapsedMinutes < 0) {
-          this.elapsedMinutes = 0;
-          this.elapsedSeconds = 0;
-          this.running = false;
-          this.playSound('http://soundbible.com/mp3/Elevator Ding-SoundBible.com-685385892.mp3');
-          // alert('Timer complete!');
-          clearInterval(this.interval); // clear the interval
-          this.startBreak();
-        }
-      }, 1000);
+      this.paused = false; // set the paused flag to false
+      // console.log('clicked startTimer');
+      this.startTimerInterval(); //start timer countdown
     },
-    
+
     // implement the startBreak method
     startBreak() {
       if (this.useShortBreak) {
-        this.elapsedMinutes = this.setShortBreakMinutes; // duration of the break in minutes
-        this.elapsedSeconds = this.setShortBreakSeconds; // duration of the break in seconds
-      }
-      else {
-        this.elapsedMinutes = this.setLongBreakMinutes; // duration of the break in minutes
-        this.elapsedSeconds = this.setLongBreakSeconds; // duration of the break in seconds
+        this.elapsedMinutes = defaultTimerParameters.defaultShortBreakMinutes; // duration of the break in minutes
+        this.elapsedSeconds = defaultTimerParameters.defaultShortBreakSeconds; // duration of the break in seconds
+        this.elapsedMilliseconds = ref(0);
+      } else {
+        this.elapsedMinutes = defaultTimerParameters.defaultLongBreakMinutes; // duration of the break in minutes
+        this.elapsedSeconds = defaultTimerParameters.defaultLongBreakSeconds; // duration of the break in seconds
+        this.elapsedMilliseconds = ref(0);
       }
       this.running = true; // set the running flag to true
       this.breakActive = true; // set the breakActive flag to true
-      this.interval = setInterval(() => {
-        // decrement the seconds
-        this.elapsedSeconds--;
-
-        // if the seconds reach zero, reset them and decrement the minutes
-        if (this.elapsedSeconds < 0) {
-          this.elapsedSeconds = 59;
-          this.elapsedMinutes--;
-        }
-
-        // if the minutes reach zero, reset the timer and display a notification
-        if (this.elapsedMinutes < 0) {
-          this.elapsedMinutes = 0;
-          this.elapsedSeconds = 0;
-          this.running = false;
-          clearInterval(this.interval); // clear the interval
-          this.startTimer();
-          this.breakActive = false; // set the breakActive flag to false
-        }
-      }, 1000);
-
+      this.startTimerInterval(); // start timer countdown
     },
 
     // implement the stopTimer method
     stopTimer() {
       // clear the interval and reset the timer
-      clearInterval(this.interval);
-      // this.minutes = this.setMinutes;
-      // this.seconds = this.setSeconds;
       this.running = false;
+      this.paused = true;
+      clearInterval(this.interval);
+    },
+
+    startTimerInterval() {
+      let startTime = performance.now(); // get the start time
+      let totalTime = this.elapsedMinutes * 60000 + this.elapsedSeconds * 1000; // calculate total time in milliseconds
+      this.interval = setInterval(() => {
+        let elapsedTime = performance.now() - startTime;
+        let remainingTime = totalTime - elapsedTime; // subtract elapsed time from total time
+        this.elapsedMilliseconds = Math.floor(remainingTime % 1000);
+        this.elapsedSeconds = Math.floor(remainingTime / 1000) % 60;
+        this.elapsedMinutes = Math.floor(remainingTime / (1000 * 60)) % 60;
+        this.percentageRemaining = 1 - remainingTime / totalTime;
+        // if the minutes reach zero, reset the timer and display a notification
+        if (remainingTime <= 0) {
+          this.running = false;
+          this.playSound(
+            'http://soundbible.com/mp3/Elevator Ding-SoundBible.com-685385892.mp3'
+          );
+          clearInterval(this.interval); // clear the interval
+          if (this.breakActive) {
+            this.startTimer();
+            this.breakActive = false; // set the breakActive flag to false
+          } else {
+            this.startBreak();
+          }
+        }
+      }, 10);
     },
 
     resetTimer() {
+      this.elapsedMinutes = defaultTimerParameters.defaultMinutes;
+      this.elapsedSeconds = defaultTimerParameters.defaultSeconds;
+      this.elapsedMilliseconds = ref(0);
+      this.running = false; // reset the running flag to false
+      this.paused = false; // reset the paused flag to false
+      this.breakActive = false; // reset the breakActive flag to false
       // clear the interval and reset the timer to its original value
       clearInterval(this.interval);
-      this.elapsedMinutes = this.setMinutes;
-      this.elapsedSeconds = this.setSeconds;
-      this.running = false;
     },
 
-    saveSettings() {
-      // Save the changes to the timer variables here
-      this.showSettings = false
-      this.totalMinutes = this.setMinutes
-      this.totalSeconds = this.setSeconds
-      
-    },
-
-    cancelSettings() {
-      // Save the changes to the timer variables here
-      this.showSettings = false
-    },
-
-    resetSettings() {
-      // Save the changes to the timer variables here
-      // this.showSettings = false
-      this.setMinutes = this.initMinutes
-      this.setSeconds = this.initSeconds
-      this.shortBreakMinutes = this.initShortBreakMinutes
-      this.shortBreakSeconds = this.initShortBreakSeconds
-      this.longBreakMinutes = this.initLongBreakMinutes
-      this.longBreakSeconds = this.initLongBreakSeconds
-    },
-
-    playSound (sound) {
-      if(sound) {
+    playSound(sound) {
+      if (sound) {
         var audio = new Audio(sound);
         audio.play();
       }
     },
 
+    setPercentRemaining() {
+      let totalElapsed =
+        this.elapsedMinutes * 60000 +
+        this.elapsedSeconds * 1000 +
+        this.elapsedMilliseconds;
+      let totalTime = this.totalMinutes * 60000 + this.totalSeconds * 1000;
+      return 1 - totalElapsed / totalTime;
+    },
+
     //format the timer display as mm:ss
     pad(n) {
       return n.toString().padStart(2, '0');
-    }
-  }
+    },
+  },
 };
 </script>

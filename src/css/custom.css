@@ -1,15 +1,42 @@
 .timer {
   font-size: 128px;
   font-weight: bold;
-  text-align: center;
   margin: 20px 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
 }
 
-.logo {
-  width: 50px;
-  height: 50px;
-  display: block;
-  margin: 0 auto;
-
+.progressbar {
+  font-size: smaller;
+  text-align: center;
+  margin: auto;
+  display: flex;
+  width: 50%;
 }
 
+.milliseconds {
+  font-size: small;
+}
+/* (swap colors to make dark mode default) */
+/* Dark mode colors */
+body {
+  color: #fff;
+  background-color: #333;
+}
+
+/* Light mode colors */
+.dark {
+  color: #333;
+  background-color: #fff;
+}
+
+.break {
+  color: #fff;
+  background-color: tan;
+}
+
+.paused {
+  color: #fff;
+  background-color: rgb(157, 123, 51);
+}

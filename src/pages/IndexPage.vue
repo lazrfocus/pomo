@@ -1,7 +1,9 @@
 <template>
-  <q-page class="column items-center justify-evenly">
-    <PomodoroTimer />
-  </q-page>
+  <q-page-container>
+    <q-page>
+      <PomodoroTimer />
+    </q-page>
+  </q-page-container>
 </template>
 
 <script setup lang="ts">
