@@ -1,18 +1,10 @@
 <template>
-  <!-- <div>
-    <ChildComponent
-      :breakActive="isBreakActive"
-      :paused="isPaused"
-      :running="isRunning"
-    />
-  </div> -->
   <q-layout
     view="hHh lpR fFf"
     :class="{
       dark: isDarkMode,
       break: isBreakActive,
       paused: isPaused,
-      running: isRunning,
     }"
   >
     <q-header reveal elevated class="bg-dark text-white">
@@ -21,7 +13,7 @@
 
         <q-toolbar-title>
           <q-avatar>
-            <img src="src/assets/pomo_logo.png" />
+            <img src="~assets/pomo_logo.png" />
           </q-avatar>
           Pomo
         </q-toolbar-title>
@@ -53,14 +45,7 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container
-      :class="{
-        dark: isDarkMode,
-        break: isBreakActive,
-        paused: isPaused,
-        running: isRunning,
-      }"
-    >
+    <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>
@@ -69,12 +54,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import EssentialLink from 'components/EssentialLink.vue';
-import PomodoroTimerVue from 'src/components/PomodoroTimer.vue';
+import data from 'src/components/PomodoroTimer.vue';
 
 const isDarkMode = ref(false);
-const isBreakActive = PomodoroTimerVue.breakActive;
-const isPaused = PomodoroTimerVue.paused;
-const isRunning = PomodoroTimerVue.running;
+const isBreakActive = data.breakActive;
+const isPaused = data.paused;
+const isRunning = data.running;
 console.log(isBreakActive, isPaused, isRunning);
 const pomoLinks = [
   {
@@ -102,6 +87,5 @@ function toggleLeftDrawer() {
 
 function toggleDarkMode() {
   isDarkMode.value = !isDarkMode.value;
-  document.body.classList.toggle('dark', isDarkMode.value);
 }
 </script>

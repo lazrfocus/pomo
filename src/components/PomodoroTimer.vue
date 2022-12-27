@@ -47,42 +47,22 @@ export default {
       elapsedMinutes: ref(defaultTimerParameters.defaultMinutes),
       elapsedSeconds: ref(defaultTimerParameters.defaultSeconds),
       elapsedMilliseconds: ref(0),
-      totalMinutes: ref(defaultTimerParameters.defaultMinutes),
-      totalSeconds: ref(defaultTimerParameters.defaultMinutes),
-      paused: false,
-      running: false,
-      breakActive: false,
-      startTime: ref(0),
-      percentageRemainging: ref(0),
+      running: ref(false),
+      paused: ref(false),
+      breakActive: ref(false),
     };
   },
-
-  props: ['this.breakActive', 'this.paused', 'this.running'],
-
-  // computed: {
-  //   percentageRemaining() {
-  //     let totalElapsed =
-  //       this.elapsedMinutes * 60000 +
-  //       this.elapsedSeconds * 1000 +
-  //       this.elapsedMilliseconds;
-  //     let totalTime = this.totalMinutes * 60000 + this.totalSeconds * 1000;
-  //     console.log(1 - totalElapsed / totalTime);
-  //     return 1 - totalElapsed / totalTime;
-  //   },
-  // },
 
   // implement the startTimer method
   methods: {
     startTimer() {
       if (!this.running && !this.paused) {
         // set timer to initial values if timer is not running
-        this.elapsedMinutes = defaultTimerParameters.defaultMinutes;
-        this.elapsedSeconds = defaultTimerParameters.defaultSeconds;
+        this.elapsedMinutes = this.totalMinutes =
+          defaultTimerParameters.defaultMinutes;
+        this.elapsedSeconds = this.totalSeconds =
+          defaultTimerParameters.defaultSeconds;
         this.elapsedMilliseconds = ref(0);
-        // set the total minutes and seconds for the progress bar
-        this.totalMinutes = defaultTimerParameters.defaultMinutes;
-        this.totalSeconds = defaultTimerParameters.defaultSeconds;
-        // calculate total time in milliseconds
       }
       this.running = true; // set the running flag to true
       this.paused = false; // set the paused flag to false
@@ -93,12 +73,16 @@ export default {
     // implement the startBreak method
     startBreak() {
       if (this.useShortBreak) {
-        this.elapsedMinutes = defaultTimerParameters.defaultShortBreakMinutes; // duration of the break in minutes
-        this.elapsedSeconds = defaultTimerParameters.defaultShortBreakSeconds; // duration of the break in seconds
+        this.elapsedMinutes = this.totalMinutes =
+          defaultTimerParameters.defaultShortBreakMinutes; // duration of the break in minutes
+        this.elapsedSeconds = this.totalSeconds =
+          defaultTimerParameters.defaultShortBreakSeconds; // duration of the break in seconds
         this.elapsedMilliseconds = ref(0);
       } else {
-        this.elapsedMinutes = defaultTimerParameters.defaultLongBreakMinutes; // duration of the break in minutes
-        this.elapsedSeconds = defaultTimerParameters.defaultLongBreakSeconds; // duration of the break in seconds
+        this.elapsedMinutes = this.totalMinutes =
+          defaultTimerParameters.defaultLongBreakMinutes; // set total duration of the break in minutes
+        this.elapsedSeconds = this.totalMutes =
+          defaultTimerParameters.defaultLongBreakSeconds; // set total duration of the break in seconds
         this.elapsedMilliseconds = ref(0);
       }
       this.running = true; // set the running flag to true
@@ -123,7 +107,6 @@ export default {
         this.elapsedMilliseconds = Math.floor(remainingTime % 1000);
         this.elapsedSeconds = Math.floor(remainingTime / 1000) % 60;
         this.elapsedMinutes = Math.floor(remainingTime / (1000 * 60)) % 60;
-        this.percentageRemaining = 1 - remainingTime / totalTime;
         // if the minutes reach zero, reset the timer and display a notification
         if (remainingTime <= 0) {
           this.running = false;
@@ -157,15 +140,6 @@ export default {
         var audio = new Audio(sound);
         audio.play();
       }
-    },
-
-    setPercentRemaining() {
-      let totalElapsed =
-        this.elapsedMinutes * 60000 +
-        this.elapsedSeconds * 1000 +
-        this.elapsedMilliseconds;
-      let totalTime = this.totalMinutes * 60000 + this.totalSeconds * 1000;
-      return 1 - totalElapsed / totalTime;
     },
 
     //format the timer display as mm:ss
