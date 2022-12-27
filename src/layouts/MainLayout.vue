@@ -28,7 +28,13 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" overlay bordered>
+    <q-drawer
+      v-model="leftDrawerOpen"
+      side="left"
+      overlay
+      bordered
+      class="bg-dark text-white"
+    >
       <q-list>
         <q-item-label header> Pomo </q-item-label>
         <EssentialLink
