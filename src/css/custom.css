@@ -40,3 +40,15 @@ body {
   color: #fff;
   background-color: rgb(157, 123, 51);
 }
+
+a {
+  text-decoration: none;
+}
+
+.menu-list a {
+  color: white; /* change the color of the links to white */
+}
+
+.menu-list a:hover {
+  color: blue; /* change the color of the links on hover to lightgray */
+}

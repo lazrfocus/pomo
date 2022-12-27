@@ -34,21 +34,52 @@
       overlay
       bordered
       class="bg-dark text-white"
+      :width="175"
+      :breakpoint="500"
     >
-      <q-list>
-        <q-item-label header> Pomo </q-item-label>
-        <EssentialLink
-          v-for="link in pomoLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-        <q-item-label header> External Links </q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
+      <q-scroll-area class="fit">
+        <q-list padding class="menu-list">
+          <router-link to="/">
+            <q-item active clickable v-ripple>
+              <q-item-section avatar>
+                <q-icon name="home" />
+              </q-item-section>
+
+              <q-item-section> Home </q-item-section>
+            </q-item>
+          </router-link>
+
+          <router-link to="/settings">
+            <q-item clickable v-ripple>
+              <q-item-section avatar>
+                <q-icon name="settings" />
+              </q-item-section>
+
+              <q-item-section> Settings </q-item-section>
+            </q-item>
+          </router-link>
+
+          <router-link to="/about">
+            <q-item clickable v-ripple>
+              <q-item-section avatar>
+                <q-icon name="info_outline" />
+              </q-item-section>
+
+              <q-item-section> Info </q-item-section>
+            </q-item>
+          </router-link>
+
+          <a href="https://www.github.com/lazrfocus/pomo">
+            <q-item clickable v-ripple>
+              <q-item-section avatar>
+                <q-icon name="code" />
+              </q-item-section>
+
+              <q-item-section> Github </q-item-section>
+            </q-item>
+          </a>
+        </q-list>
+      </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
@@ -59,40 +90,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EssentialLink from 'components/EssentialLink.vue';
 import data from 'src/components/PomodoroTimer.vue';
-import PomoSettings from 'src/components/PomoSettings.vue';
 
 const isDarkMode = ref(false);
 const isBreakActive = data.breakActive;
 const isPaused = data.paused;
 const isRunning = data.running;
 console.log(isBreakActive, isPaused, isRunning);
-const pomoLinks = [
-  {
-    title: 'Home',
-    icon: 'home',
-    link: '#',
-  },
-  {
-    title: 'Settings',
-    icon: 'settings',
-    link: '/settings',
-  },
-  {
-    title: 'About',
-    icon: 'info',
-    link: '#',
-  },
-];
-
-const essentialLinks = [
-  {
-    title: 'Github',
-    icon: 'code',
-    link: 'https://github.com/lazrfocus/pomo',
-  },
-];
 
 const leftDrawerOpen = ref(false);
 
