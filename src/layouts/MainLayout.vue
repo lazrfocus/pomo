@@ -61,6 +61,7 @@
 import { ref } from 'vue';
 import EssentialLink from 'components/EssentialLink.vue';
 import data from 'src/components/PomodoroTimer.vue';
+import PomoSettings from 'src/components/PomoSettings.vue';
 
 const isDarkMode = ref(false);
 const isBreakActive = data.breakActive;
@@ -70,8 +71,17 @@ console.log(isBreakActive, isPaused, isRunning);
 const pomoLinks = [
   {
     title: 'Home',
-    caption: 'Home',
     icon: 'home',
+    link: '#',
+  },
+  {
+    title: 'Settings',
+    icon: 'settings',
+    link: '/settings',
+  },
+  {
+    title: 'About',
+    icon: 'info',
     link: '#',
   },
 ];
@@ -79,7 +89,6 @@ const pomoLinks = [
 const essentialLinks = [
   {
     title: 'Github',
-    caption: 'github.com/lazrfocus/pomo',
     icon: 'code',
     link: 'https://github.com/lazrfocus/pomo',
   },
