@@ -1,8 +1,10 @@
 <template>
   <!-- timer display -->
   <div class="timer">
-    {{ pad(elapsedMinutes) }}:{{ pad(elapsedSeconds) }}
-    <span class="milliseconds">.{{ pad(elapsedMilliseconds) }} </span>
+    <h1>
+      {{ pad(elapsedMinutes) }}:{{ pad(elapsedSeconds) }}
+      <span class="milliseconds">.{{ pad(elapsedMilliseconds) }} </span>
+    </h1>
   </div>
 
   <!-- buttons -->
